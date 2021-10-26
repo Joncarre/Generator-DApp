@@ -91,7 +91,7 @@ function App() {
         <p><h5>Solution: </h5>{data[2]}</p>
         <p><h5>Solved date: </h5>{data[3]}</p>
       </div>
-      <button onClick={async_solveLastInstance}>Set solution</button>
+      <button onClick={async_solveLastInstance}>Set solutionn</button>
       <input onChange={e => setUser(e.target.value)} placeholder="solution" />
     </div>
   );
