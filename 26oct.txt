@@ -1,0 +1,102 @@
+import './App.css';
+import { useState } from 'react';
+import { ethers } from 'ethers';
+import Generator from './artifacts/contracts/Generator.sol/Generator.json'
+
+// Update with the contract address logged out to the CLI when it was deployed 
+const generatorAddress = "0xF3E77Dfb69B6889dA946FBCE237E458f66d4c65d"
+
+function App() {
+  // store greeting in local state
+  const [data, setData] = useState([" ", " ", " ", " "])
+  const [user, setUser] = useState(0)
+
+    // request access to the user's MetaMask account
+    async function requestAccount() {
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+    }
+
+    async function async_solveLastInstance() {
+      if (typeof window.ethereum !== 'undefined') {
+        await requestAccount()
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(generatorAddress, Generator.abi, signer);
+        const transaction = await contract.solveLastInstance(user)
+        await transaction.wait()
+      }
+    }
+
+    async function async_regResearcher() {
+      if (typeof window.ethereum !== 'undefined') {
+        await requestAccount()
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(generatorAddress, Generator.abi, signer);
+        const transaction = await contract.regResearcher(user)
+        await transaction.wait()
+      }
+    }
+
+    // -----------------------------------------
+    async function async_createInstance() {
+      if (typeof window.ethereum !== 'undefined') {
+        await requestAccount()
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(generatorAddress, Generator.abi, signer);
+        const transaction = await contract.createInstance({
+          gasLimit: 10000000
+        })
+        await transaction.wait()
+      }
+    }
+
+    async function async_getInstance() {
+      if (typeof window.ethereum !== 'undefined') {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const contract = new ethers.Contract(generatorAddress, Generator.abi, provider);
+        try {
+          const signer = provider.getSigner()
+          const result = await contract.connect(signer).getInstance()
+          let startDate = new Date(parseInt(result[2]._hex.slice(2), 16)*1000);
+          let endDate = new Date(parseInt(result[4]._hex.slice(2), 16)*1000);         
+          let arrayData = [
+            result[1], 
+            startDate.getFullYear() + "/" + startDate.getMonth() + "/" + startDate.getDate()  + " " + startDate.getHours() + ":" + startDate.getMinutes() + ":" + startDate.getSeconds(),
+            result[3], 
+            endDate.getFullYear() + "/" + endDate.getMonth() + "/" + endDate.getDate()  + " " + endDate.getHours() + ":" + endDate.getMinutes() + ":" + endDate.getSeconds()
+          ]
+          setData(arrayData)
+          console.log(arrayData)
+        } catch (err) {
+          console.log("Error: ", err)
+        }
+      }    
+    }
+
+    function printInstance(){
+      setData(prev => !prev);
+    }
+
+  return (
+    <div className="App">
+      <h5>Researcher information</h5>
+      <button onClick={async_regResearcher}>Set orcid</button>
+      <input onChange={e => setUser(e.target.value)} placeholder="orcid" />
+      <h5>Instance information</h5>
+      <button onClick={async_createInstance}>Create instance</button>
+      <button onClick={async_getInstance}>Get instance</button>
+      <button onClick={printInstance}>Print instance</button>
+      {data && (
+          <div>
+            <ul> {data.map(item => <p key={item}> {item} </p>)} </ul>
+          </div>
+      )}
+      <button onClick={async_solveLastInstance}>Set hash</button>
+      <input onChange={e => setUser(e.target.value)} placeholder="hash" />
+    </div>
+  );
+}
+
+export default App;
