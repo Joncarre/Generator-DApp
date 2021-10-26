@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import Generator from './artifacts/contracts/Generator.sol/Generator.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const generatorAddress = "0xAf51b9F576cC01290f410eA5549fd0b791700757"
+const generatorAddress = "0xE695d851089AC420a4bb5619349032Cfe21Da72b"
 
 function App() {
   // store greeting in local state
