@@ -31,6 +31,3 @@ typechain
 # hardhat files
 cache
 artifacts
-
-# keys
-secrets.json

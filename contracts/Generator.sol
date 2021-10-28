@@ -84,7 +84,7 @@ contract Generator {
     
     // ------------------------------- MAX-3SAT functions --------------------------------
     
-    /// @notice Generates a new Instance 
+    /// @notice Generates a new Instance from A generator
     function createAInstance() external {
         //require(instances[msg.sender].solved, "Last instance is not solved");
         string memory fi = ""; // empty initialitation
@@ -94,14 +94,40 @@ contract Generator {
                 symbols.push(symbols.length);  
         
         fi = conca(fi, createClause(), "", "");
-        //uint iterations = random(100);
-           while(random(100) < q){ // [0, 99] < q
+        uint iterations = 0;
+        while(random(100) < q && iterations < 150){ // [0, 99] < q
             for(uint i = 0; i < 3; i++)
                 if(random(100) < p) // [0, 99] < p
                     symbols.push(symbols.length);  
             
-            fi = conca(fi, " ^ ", createClause(), ""); 
+            fi = conca(fi, " ^ ", createClause(), "");
+            iterations++;
         }
+        instances[msg.sender] = Instance(idInstance, fi, block.timestamp, "Unresolved", false, 0);
+        idInstance++;
+    }
+
+    /// @notice Generates a new Instance from B generator
+    function createBInstance() external {
+        //require(instances[msg.sender].solved, "Last instance is not solved");
+        string memory fi = ""; // empty initialitation
+        symbols.push(symbols.length);
+        uint numClauses = 0;         
+        uint iterations = 0;
+        while(random(100) < q && iterations < 150){
+            numClauses++;
+            iterations++;
+        }
+
+        for(uint i = 0; i < 3*numClauses-1; i++){
+            if(random(100) < p) // [0, 99] < p
+                symbols.push(symbols.length); 
+        }
+        // We create the first clause separately cause it's special
+        fi = conca(fi, createClause(), "", "");
+        for(uint i = 0; i < numClauses; i++)
+            fi = conca(fi, " ^ ", createClause(), ""); 
+        
         instances[msg.sender] = Instance(idInstance, fi, block.timestamp, "Unresolved", false, 0);
         idInstance++;
     }

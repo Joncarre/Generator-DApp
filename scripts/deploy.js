@@ -15,7 +15,7 @@ async function main() {
 
   // We get the contract to deploy
   const Generator = await hre.ethers.getContractFactory("Generator");
-  const generator = await Generator.deploy(10, 98);
+  const generator = await Generator.deploy(5, 99);
 
   await generator.deployed();
 

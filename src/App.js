@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import Generator from './artifacts/contracts/Generator.sol/Generator.json'
 
 // Update with the contract address logged out to the CLI when it was deployed 
-const generatorAddress = "0xE695d851089AC420a4bb5619349032Cfe21Da72b"
+const generatorAddress = "0xf9DE3E92Aa6D8FEF8De00d4a7701B7434cAa25AA"
 
 function App() {
   // store greeting in local state
@@ -52,6 +52,19 @@ function App() {
       }
     }
 
+    async function async_createBInstance() {
+      if (typeof window.ethereum !== 'undefined') {
+        await requestAccount()
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner()
+        const contract = new ethers.Contract(generatorAddress, Generator.abi, signer);
+        const transaction = await contract.createBInstance({
+          gasLimit: 12000000
+        })
+        await transaction.wait()
+      }
+    }
+
     async function async_getInstance() {
       if (typeof window.ethereum !== 'undefined') {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -82,7 +95,7 @@ function App() {
       <input onChange={e => setUser(e.target.value)} placeholder="orcid" />
       <h3>Instance information</h3>
       <button onClick={async_createAInstance}>Create A instance</button>
-      <button>Create B instance</button>
+      <button onClick={async_createBInstance}>Create B instance</button>
       <p></p>
       <button onClick={async_getInstance}>Get instance</button>
       <div>
