@@ -65,7 +65,7 @@ function App() {
       <button onClick={async_setResearcher}>Set researcher</button>
       <input onChange={e => setResearcher(e.target.value)} placeholder="" />
       <h3>Get information</h3>
-      <button onClick={async_getResearcher}>Get researcher</button>
+      <button onClick={async_getResearcher}>Get researcherrr</button>
     </div>
      /* <Router>
         <Switch>
