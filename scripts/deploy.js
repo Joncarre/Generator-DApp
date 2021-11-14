@@ -15,11 +15,11 @@ async function main() {
 
   // We get the contract to deploy
   const Generator = await hre.ethers.getContractFactory("Generator");
-  const generator = await Generator.deploy(5, 99);
+  const generator = await Generator.deploy();
 
   await generator.deployed();
 
-  console.log("Generator deployed to:", generator.address);
+  console.log("Generator deployed to: ", generator.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

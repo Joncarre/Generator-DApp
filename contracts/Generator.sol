@@ -2,28 +2,29 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
-import "hardhat/console.sol";
-
 /// @title 
 /// @author J. Carrero
 contract Generator {
     // Researcher information
     struct Researcher {
-        string orcid;
+        string name;
+        uint orcid;
         bool registered;
+        uint[] idInstance;
     }
-    mapping(address => Researcher) researchers;
+    mapping(uint => Researcher) researchers;
     
     // Instance information
     struct Instance {
         uint id;
-        string chain;
+        uint[] chain;
+        uint size;
         uint dateCreated;
         string solution;
         bool solved;
         uint dateSolution;
     }
-    mapping(address => Instance) instances;
+    mapping(uint => Instance) instances;
 
     // VRF variables
     bytes32 internal keyHash;
@@ -36,15 +37,10 @@ contract Generator {
     uint idInstance;
     
     // MAX-3SAT variables
-    uint[] symbols;  
-    uint p;
-    uint q;
     uint clausesLength;
     
     /// @notice Main constructor
-    constructor(uint _p, uint _q) {
-        p = _p;
-        q = _q;
+    constructor() {
         owner = msg.sender;
         nonce = 0;
         idInstance = 0;
@@ -52,7 +48,7 @@ contract Generator {
     }
     
     // Modifiers
-    modifier alreadyRegistered () {
+    /*modifier alreadyRegistered () {
         if(researchers[msg.sender].registered)
             revert("This address is already registered");
         _;
@@ -61,131 +57,86 @@ contract Generator {
     modifier mustRegister () {
         require(researchers[msg.sender].registered, "You must be registered");
         _;
-    }
+    }*/
     
     // ---------------------------------- General functions ----------------------------------
     
     /// @notice Registers a new Researcher 
-    function regResearcher(string memory _orcid) external {
-        researchers[msg.sender] = Researcher(_orcid, true);
+    function setResearcher(string memory _name, uint _orcid) public {
+        uint[] memory empty;
+        researchers[_orcid] = Researcher(_name, _orcid, true, empty);
     }
 
     /// @notice Get instance
-    function getInstance() public view returns (uint, string memory, uint, string memory, uint){
-        return (instances[msg.sender].id, instances[msg.sender].chain, instances[msg.sender].dateCreated, instances[msg.sender].solution, instances[msg.sender].dateSolution);
+    function getInstance(uint _index) public view returns (uint, uint[] memory, uint, uint, string memory, uint) {
+        // index debe ser <= idInstance (la variable general que indica cuantas instancias hay)
+        return (instances[_index].id, instances[_index].chain, instances[_index].size, instances[_index].dateCreated, instances[_index].solution, instances[_index].dateSolution);
     }
     
-    /// @notice Set the solution for the last instance
-    function solveLastInstance(string memory _solution) external {
-        instances[msg.sender].solution = _solution;
-        instances[msg.sender].solved = true;
-        instances[msg.sender].dateSolution = block.timestamp;
+    /// @notice Set the solution for the _index instance
+    function solveInstance(uint _index, string memory _solution) public {
+        instances[_index].solution = _solution;
+        instances[_index].solved = true;
+        instances[_index].dateSolution = block.timestamp;
     }
-    
+
     // ------------------------------- MAX-3SAT functions --------------------------------
     
     /// @notice Generates a new Instance from A generator
-    function createAInstance() external {
-        //require(instances[msg.sender].solved, "Last instance is not solved");
-        string memory fi = ""; // empty initialitation
-        symbols.push(symbols.length);
+    function createAInstance(uint _p, uint _q, uint _orcid) public {
+      // Comprobar que el orcid existe y esta registrado
+        uint[] memory chain;
+        uint symbols = 0;
+        uint numClauses = 0;
+        // First round of symbols
         for(uint i = 0; i < 2; i++)
-            if(random(100) < p) // [0, 99] < p
-                symbols.push(symbols.length);  
-        
-        fi = conca(fi, createClause(), "", "");
-        uint iterations = 0;
-        while(random(100) < q && iterations < 150){ // [0, 99] < q
+            if(random(100) < _p)
+                symbols++;
+        // We create the first clause
+        for(uint i = 0; i < clausesLength; i++)
+            chain[chain.length] = random(symbols);
+        numClauses++;
+        // We create the rest of clauses
+        while(random(100) < _q && numClauses < 50){
             for(uint i = 0; i < 3; i++)
-                if(random(100) < p) // [0, 99] < p
-                    symbols.push(symbols.length);  
-            
-            fi = conca(fi, " ^ ", createClause(), "");
-            iterations++;
+                if(random(100) < _p)
+                    symbols++;
+            for(uint i = 0; i < clausesLength; i++)
+                chain[chain.length] = random(symbols);
+            numClauses++;
         }
-        instances[msg.sender] = Instance(idInstance, fi, block.timestamp, "Unresolved", false, 0);
+        
+        instances[idInstance] = Instance(idInstance, chain, numClauses, block.timestamp, "Unresolved", false, 0);
+        researchers[_orcid].idInstance.push(idInstance);
         idInstance++;
     }
 
     /// @notice Generates a new Instance from B generator
-    function createBInstance() external {
-        //require(instances[msg.sender].solved, "Last instance is not solved");
-        string memory fi = ""; // empty initialitation
-        symbols.push(symbols.length);
-        uint numClauses = 0;         
-        uint iterations = 0;
-        while(random(100) < q && iterations < 150){
+    function createBInstance(uint _p, uint _q, uint _orcid) public {
+     // Comprobar que el orcid existe y esta registrado
+        uint[] memory chain;
+        uint symbols = 0;
+        uint numClauses = 0;
+        // We calculate the number of clauses
+        while(random(100) < _q && numClauses < 50)
             numClauses++;
-            iterations++;
-        }
-
-        for(uint i = 0; i < 3*numClauses-1; i++){
-            if(random(100) < p) // [0, 99] < p
-                symbols.push(symbols.length); 
-        }
-        // We create the first clause separately cause it's special
-        fi = conca(fi, createClause(), "", "");
-        for(uint i = 0; i < numClauses; i++)
-            fi = conca(fi, " ^ ", createClause(), ""); 
-        
-        instances[msg.sender] = Instance(idInstance, fi, block.timestamp, "Unresolved", false, 0);
+        // Add symbols
+        for(uint i = 0; i < 3*numClauses-1; i++)
+            if(random(100) < _p)
+                symbols++;
+         // Fill the blanks    
+        for(uint i = 0; i < 3*numClauses; i++)
+            chain[chain.length] = random(symbols);
+            
+        instances[idInstance] = Instance(idInstance, chain, numClauses, block.timestamp, "Unresolved", false, 0);
+        researchers[_orcid].idInstance.push(idInstance);
         idInstance++;
-    }
-    
-    // @notice Creates a new clause
-    function createClause() internal returns (string memory) {
-        string memory c = "(";
-        for(uint i = 0; i < clausesLength; i++){
-            if(random(100) < 50) // [0, 9] < 5 => 50% probability
-                c = conca(c, "x", intToString(symbols[random(symbols.length)]), "");
-            else
-                c = conca(c, "~", "x", intToString(symbols[random(symbols.length)]));
-            // We need to add a new symbol in every iteration except for the last one
-            if(i < clausesLength-1)
-                c = conca(c, " v ", "", "");
-        }
-        c = conca(c, ")", "", "");
-        return c;
-    }
-
-    function conca(string memory s1, string memory s2, string memory s3, string memory s4) internal pure returns (string memory) {
-        return string(abi.encodePacked(s1, s2, s3, s4));
     }
    
     // -------------------------------- Support functions --------------------------------
 
-    function getResearcher() public view returns (string memory){
-        return researchers[msg.sender].orcid;
-    }
-    
-    function getLastHash() public view returns (string memory){
-        return instances[msg.sender].solution;
-    }
-
-    function getSymbolArray() public view returns (uint[] memory){
-       return symbols;
-    }
-    
-    function intToString(uint _i) internal pure returns (string memory _uintAsString) {
-        if (_i == 0) {
-            return "0";
-        }
-        uint j = _i;
-        uint len;
-        while (j != 0) {
-            len++;
-            j /= 10;
-        }
-        bytes memory bstr = new bytes(len);
-        uint k = len;
-        while (_i != 0) {
-            k = k-1;
-            uint8 temp = (48 + uint8(_i - _i / 10 * 10));
-            bytes1 b1 = bytes1(temp);
-            bstr[k] = b1;
-            _i /= 10;
-        }
-        return string(bstr);
+    function getResearcher(uint _orcid) public view returns (string memory, uint, bool, uint[] memory){
+        return (researchers[_orcid].name, researchers[_orcid].orcid, researchers[_orcid].registered, researchers[_orcid].idInstance);
     }
     
     /// @notice Generates a random number within an interval
