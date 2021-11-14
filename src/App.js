@@ -29,11 +29,6 @@ function App() {
     dateSolution: null
   })
 
-  UpdateResearcher(event) {
-    const { name, value } = event.target
-    setResearcher( prev => ({ ...prev, [name]: value})
- }
-
   // request access to the user's MetaMask account
   async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
