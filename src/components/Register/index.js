@@ -36,12 +36,6 @@ const Register = () => {
         reset();
     };
   
-
-
-
-
-
-
     function cutHash(elem){
       var cut = elem.replace(/[^0-9]/g, '');
       var result = cut.substring(0,10);
