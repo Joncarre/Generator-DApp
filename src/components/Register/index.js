@@ -35,31 +35,6 @@ const Register = () => {
         });
         reset();
     };
-  
-    function cutHash(elem){
-      var cut = elem.replace(/[^0-9]/g, '');
-      var result = cut.substring(0,10);
-      return result;
-    }
-
-    async function async_setResearcher(data) {
-        if (typeof window.ethereum !== 'undefined') {
-          await requestAccount()
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const signer = provider.getSigner()
-          const contract = new ethers.Contract(generatorAddress, Generator.abi, signer);
-
-          var secret = 21212121;
-          console.log("async_setResearcher: " + secret, data.name, data.email, data.orcid);
-          const transaction = await contract.setResearcher(
-            secret,
-            data.name, 
-            data.email,
-            data.orcid,
-            {gasLimit: 12000000})
-          await transaction.wait()
-        }
-    }
 
     return ( 
         <>
@@ -67,7 +42,7 @@ const Register = () => {
                 <FormWrap>
                     <FormContent>
                         <Form onSubmit={handleSubmit(sendEmail)}>
-                            <FormH1>Register your information</FormH1>
+                            <FormH1>Register the information</FormH1>
                             <FormLabel>Name</FormLabel>
                             <FormInput
                                 {...register("name", {
