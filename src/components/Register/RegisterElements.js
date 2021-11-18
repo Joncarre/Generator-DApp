@@ -60,14 +60,14 @@ export const FormContent = styled.div`
 `;
 
 export const Form = styled.form`
-    background: #010101;
+    background: #1b2631;
     max-width: 400px;
     height: auto;
     width: 100%;
     z-index: 1;
     display: grid;
     margin: 0 auto;
-    padding: 80px 32px;
+    padding: 60px 32px;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 
@@ -91,18 +91,46 @@ export const FormLabel = styled.label`
 `;
 
 export const FormInput = styled.input`
-    padding: 16px 16px;
-    margin-bottom: 32px;
+    font-family: "Montserrat", Sans-serif;
+    padding: 16px 36px;
+    margin-bottom: 10px;
     border: none;
     border-radius: 4px;
+    font-size: 14px;
 `;
 
-export const FormButton = styled.button`
+export const FormButton = styled.input`
+    font-family: monospace, monospace;
     background: #01bf71;
-    padding: 16px 0;
-    border: none;
-    border-radius: 4px;
+    padding: 18px 0px;
+    margin-top: 15px;
+    border-radius: 5px;
+    border: 3px solid #01bf71;
     color: #fff;
-    font-size: 20px;
     cursor: pointer;
+    font-size: 16px;
+    width: 40%;
+    margin-left: 30%;
+    margin-right: 30%;
+
+    &:hover{
+        transition: all 0.3s ease-in-out;
+        border: 3px solid #01bf71;
+        color: #01bf71;
+        background: #fff;
+    }
 `;
+
+export const FormError = styled.p`
+  font-family: monospace, monospace;
+  color: #d4ac0d;
+  font-size: 14px;
+  margin: 0 0 0 0;
+  &::before {
+    display: inline;
+    content: "⚠ ";
+  }   
+`;
+
+
+

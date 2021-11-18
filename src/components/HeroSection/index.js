@@ -9,8 +9,8 @@ import {
     HeroH1,
     HeroP,
     HeroBtnWrapper,
-    ArrowRight,
-    BtnLinkHome
+    BtnLinkHome,
+    BtnLinkSing
 } from './HeroElements';
 
 
@@ -41,6 +41,13 @@ const HeroSection = () => {
                     dark="true">
                         Get started
                     </BtnLinkHome>
+                    <BtnLinkSing to='/singin'
+                    onMouseEnter={onHover} 
+                    onMouseLeave={onHover}
+                    primary="true"
+                    dark="true">
+                        Log in
+                    </BtnLinkSing>
                 </HeroBtnWrapper>
             </HeroContent>
         </HeroContainer>

@@ -112,14 +112,27 @@ export const BtnLinkHome = styled(LinkR)`
     outline: none;
     border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.5s ease-in-out;
     text-decoration: none;
 
     &:hover {
-        transition: all 0.2s ease-in-out;
+        transition: all 0.4s ease-in-out;
         background: transparent;
         color: #01bf71;
         border: 1px solid #01bf71;
+    }
+`;
+
+export const BtnLinkSing = styled(LinkR)`
+    color: #01bf71;
+    text-decoration: none;
+    padding: 15px 15px 2px 15px;
+    font-size: 14px;
+    border-bottom: solid 2px transparent;
+
+    &:hover {
+        transition: all 0.6s ease-in-out;
+        border-bottom: solid 2px #01bf71;
     }
 `;
 

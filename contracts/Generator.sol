@@ -8,11 +8,17 @@ contract Generator {
     // Researcher information
     struct Researcher {
         string name;
-        uint orcid;
+        string email;
         bool registered;
         uint[] idInstance;
     }
     mapping(uint => Researcher) researchers;
+
+    // Linked information
+    struct Link {
+        uint secret;
+    }
+    mapping(uint => Link) links;
     
     // Instance information
     struct Instance {
@@ -62,9 +68,10 @@ contract Generator {
     // ---------------------------------- General functions ----------------------------------
     
     /// @notice Registers a new Researcher 
-    function setResearcher(string memory _name, uint _orcid) public {
+    function setResearcher(uint _secret, string memory _name, string memory _email, uint _orcid) public {
         uint[] memory empty;
-        researchers[_orcid] = Researcher(_name, _orcid, true, empty);
+        researchers[_secret] = Researcher(_name, _email, true, empty);
+        links[_orcid] = Link(_secret);
     }
 
     /// @notice Get instance
@@ -72,9 +79,19 @@ contract Generator {
         // index debe ser <= idInstance (la variable general que indica cuantas instancias hay)
         return (instances[_index].id, instances[_index].chain, instances[_index].size, instances[_index].dateCreated, instances[_index].solution, instances[_index].dateSolution);
     }
+
+    /// @notice Get multiple instances
+    //function getMultipleInstances(uint _orcid) public view returns (uint, uint[] memory, uint, uint, string memory, uint) {
+        // Comprobar que el orcid existe
+        // Listar todas las instancias de ese orcid
+        
+        
+        //return (instances[_index].id, instances[_index].size, instances[_index].size, instances[_index].dateCreated, instances[_index].solution, instances[_index].dateSolution);
+    //}
     
     /// @notice Set the solution for the _index instance
-    function solveInstance(uint _index, string memory _solution) public {
+    function solveInstance(uint _secret, uint _index, string memory _solution) public {
+        // Comprobar que _secret, en efecto, tiene una instancia con ese _index (recorrer el array idInstance)
         instances[_index].solution = _solution;
         instances[_index].solved = true;
         instances[_index].dateSolution = block.timestamp;
@@ -83,7 +100,7 @@ contract Generator {
     // ------------------------------- MAX-3SAT functions --------------------------------
     
     /// @notice Generates a new Instance from A generator
-    function createAInstance(uint _p, uint _q, uint _orcid) public {
+    function createAInstance(uint _p, uint _q, uint _secret) public {
       // Comprobar que el orcid existe y esta registrado
         uint[] memory chain;
         uint symbols = 0;
@@ -107,12 +124,12 @@ contract Generator {
         }
         
         instances[idInstance] = Instance(idInstance, chain, numClauses, block.timestamp, "Unresolved", false, 0);
-        researchers[_orcid].idInstance.push(idInstance);
+        researchers[_secret].idInstance.push(idInstance);
         idInstance++;
     }
 
     /// @notice Generates a new Instance from B generator
-    function createBInstance(uint _p, uint _q, uint _orcid) public {
+    function createBInstance(uint _p, uint _q, uint _secret) public {
      // Comprobar que el orcid existe y esta registrado
         uint[] memory chain;
         uint symbols = 0;
@@ -129,14 +146,14 @@ contract Generator {
             chain[chain.length] = random(symbols);
             
         instances[idInstance] = Instance(idInstance, chain, numClauses, block.timestamp, "Unresolved", false, 0);
-        researchers[_orcid].idInstance.push(idInstance);
+        researchers[_secret].idInstance.push(idInstance);
         idInstance++;
     }
    
     // -------------------------------- Support functions --------------------------------
 
-    function getResearcher(uint _orcid) public view returns (string memory, uint, bool, uint[] memory){
-        return (researchers[_orcid].name, researchers[_orcid].orcid, researchers[_orcid].registered, researchers[_orcid].idInstance);
+    function getResearcher(uint _secret) public view returns (string memory, string memory _email, bool, uint[] memory){
+        return (researchers[_secret].name, researchers[_secret].email, researchers[_secret].registered, researchers[_secret].idInstance);
     }
     
     /// @notice Generates a random number within an interval
