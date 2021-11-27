@@ -9,11 +9,11 @@ import Navbar from "./components/Navbar/index";
 import Sidebar from "./components/SideBar";
 import Home from "./pages";
 import RegisterPage from "./pages/register";
-import UserSection from './components/UserSection';
+import UserSectionPage from './pages/user';
 import SigninPage from './pages/signin';
 
 // Update with the contract address logged out to the CLI when it was deployed 
-export const generatorAddress = "0x92d120f6a15c72a0557f19d04fbCBe685D3F23ab";
+export const generatorAddress = "0x8C6C5A416d66e42DD30B990c15c2C77F205C51aF";
 
 // request access to the user's MetaMask account
 export async function requestAccount() {
@@ -27,7 +27,7 @@ function App() {
           <Route path='/' component={Home} exact />
           <Route path='/register' component={RegisterPage} exact />
           <Route path='/singin' component={SigninPage} exact />
-          <Route path='/user' component={UserSection} exact />
+          <Route path='/user' component={UserSectionPage} exact />
         </Switch>
       </Router>
   );

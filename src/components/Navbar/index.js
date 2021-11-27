@@ -12,7 +12,7 @@ import {
     NavBtn,
     NavBtnLink
 } from './NavbarElements';
-
+import logo from '../../images/logo.png';
 import { connectWallet, getCurrentWalletConnected } from '../interact';
 
 const Navbar = ({ toggle }) => {
@@ -85,7 +85,7 @@ const Navbar = ({ toggle }) => {
        <Nav scrollNav={scrollNav}>
            <NavbarContainer>
                <NavLogo to='/' onClick={toggleHome}>
-                    <img src={require('../../images/logo.png')} alt='logo' />
+                    <img src={logo} alt='logo' />
                </NavLogo>
                <MobileIcon onClick={toggle}>
                    <FaBars />

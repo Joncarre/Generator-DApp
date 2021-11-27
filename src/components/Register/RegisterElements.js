@@ -12,12 +12,10 @@ export const Container = styled.div`
     overflow: hidden;
     background: linear-gradient(
         108deg,
-        rgba(1, 147, 86, 1) 0%,
-        rgba(10, 201, 122, 1) 100%
+        rgba(23, 32, 42) 0%,
+        rgba(21, 67, 96) 100%
     );
 `;
-
-
 
 export const FormWrap = styled.div`
     height: 100%;
@@ -101,11 +99,11 @@ export const FormInput = styled.input`
 
 export const FormButton = styled.input`
     font-family: monospace, monospace;
-    background: #01bf71;
+    background: #1A5276;
     padding: 18px 0px;
     margin-top: 15px;
     border-radius: 5px;
-    border: 3px solid #01bf71;
+    border: 3px solid #1A5276;
     color: #fff;
     cursor: pointer;
     font-size: 16px;
@@ -115,8 +113,8 @@ export const FormButton = styled.input`
 
     &:hover{
         transition: all 0.3s ease-in-out;
-        border: 3px solid #01bf71;
-        color: #01bf71;
+        border: 3px solid #1A5276;
+        color: #1A5276;
         background: #fff;
     }
 `;
